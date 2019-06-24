@@ -10,6 +10,6 @@ ______
 
 
 # Please install the following R packages with the commands:
-install.packages("rtracklayer")
-install.packages("plyr")
+install.packages("rtracklayer");
+install.packages("plyr");
 install.packages("data.table")
