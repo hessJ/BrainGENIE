@@ -19,6 +19,7 @@ install.packages("data.table")
 
 ### Number of trained gene-level prediction models in GTEx verison 7 (elastic net regression models):
 `(As of June 24, 2019)`
+
 | Brain region | # of genes |
 | -----------  | ---------- |
 | Amygdala     | 6,202      |
