@@ -1,4 +1,4 @@
-# BrainGENIE
+# Welcome to BrainGENIE!
 
 ``` 
 Developed using
@@ -10,7 +10,7 @@ Running under: macOS Mojave 10.14.5
 ______
 ```
 
-# Please install the following R packages with the commands:
+## Please install the following R packages with the commands:
 ```
 install.packages("rtracklayer");
 install.packages("plyr");
