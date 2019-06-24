@@ -20,10 +20,10 @@ install.packages("data.table")
 ### Number of trained gene-level prediction models in GTEx verison 7 (elastic net regression models):
 `(As of June 24, 2019)`
 
-| Brain region | # of genes | Avg. Cor |
-| -----------  | ---------- | -------- |
-| Amygdala     | 6,202      | 0.37     |
-| ACC          | 9,765      | 0.40     |
+| Brain region | # of genes | Avg. Cor | 
+| -----------  | ---------- | -------- | 
+| Amygdala     | 6,202      | 0.37     | 
+| ACC          | 9,765      | 0.40     | 
 | Caudate      | 9,036      | 0.31     |
 | Cere. Hem.   | 10,736     | 0.35     |
 | Cerebellum   | 9,888      | 0.31     |
