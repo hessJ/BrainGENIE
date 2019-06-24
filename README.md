@@ -1,6 +1,6 @@
 # BrainGENIE
 
-```Developed using
+``` Developed using
 ______ 
 
 R version 3.5.2 (2018-12-20)
@@ -10,6 +10,8 @@ ______
 ```
 
 # Please install the following R packages with the commands:
+```
 install.packages("rtracklayer");
 install.packages("plyr");
 install.packages("data.table")
+```
