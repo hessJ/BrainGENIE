@@ -23,6 +23,7 @@ install.packages("data.table")
 ```
 bg_models = load_models(path="~/Documents/braingenie/trained_models/gtex_v7/")
 load_cv_performance(path="~/Documents/braingenie/trained_models/gtex_v7/")
+# eDat (data frame of blood transcriptome profiles; rows = subjects, columns = genes)
 
 bg.output=list() # captures output from BrainGENIE into a list object [1 = imputed transcriptome, 2 = problematic genes]
 for(x in 1:length(bg_models)){
