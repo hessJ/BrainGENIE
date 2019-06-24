@@ -1,6 +1,7 @@
 # BrainGENIE
 
-``` Developed using
+``` 
+Developed using
 ______ 
 
 R version 3.5.2 (2018-12-20)
