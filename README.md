@@ -17,7 +17,8 @@ install.packages("plyr");
 install.packages("data.table")
 ```
 
-### Gene IDs must be in Ensembl format
+### Note: 
+`Gene IDs must be in Ensembl format`
 
 ### Simple example:
 ```
