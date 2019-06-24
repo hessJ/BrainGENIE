@@ -18,7 +18,7 @@ install.packages("data.table")
 ```
 
 ### Note: 
-`Gene IDs must be in Ensembl format`
+`Gene IDs must be in Ensembl gene ID format # ENSG[XXXXXXXXXX].[X]`
 
 ### Simple example:
 ```
