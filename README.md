@@ -10,6 +10,10 @@ Running under: macOS Mojave 10.14.5
 ______
 ```
 
+## Clone this repository with:
+git clone `~/Documents/git_repo/BrainGENIE`
+
+
 ## Install dependencies for BrainGENIE with the command in console:
 ```
 Rscript install.R
