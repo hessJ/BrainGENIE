@@ -15,11 +15,6 @@ ______
 Rscript install.R
 ```
 
-```
-Pre-computed weights for predicting gene expression levels found in trained_models/ directory. 
-For better approximation, users can generate custom weights for genes that are common to the reference (GTEx) and target data set (coming soon!)
-```
-
 ### Number of trained gene-level prediction models in GTEx verison 7 (elastic net regression models):
 `(As of June 24, 2019, prefiltered for Pearson's r ≥ 0.1, p-value < 0.05)`
 
