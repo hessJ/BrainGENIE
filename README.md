@@ -11,7 +11,7 @@ ______
 ```
 
 ## Clone this repository with:
-`git clone ~/Documents/git_repo/BrainGENIE`
+`git clone https://github.com/hessJ/BrainGENIE`
 
 ## Install dependencies for BrainGENIE with the command in console:
 ```
