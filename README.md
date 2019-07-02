@@ -54,4 +54,10 @@ bg.output[[x]] = predict_brain_gxp(mod = iter[[x]], target = eDat, index = x, mi
 
 ```
 
+#### Normalization of transcriptome-wide gene expression data from GTEx v7:
+1. Kept gened with > 5 read counts in a minimum of 10 samples
+2. RPKM normalization using edgeR 
+3. Quantile normalization across samples using limma
+4. Inverse normal transformation
+
 

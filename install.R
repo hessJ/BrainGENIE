@@ -6,6 +6,7 @@ install.packages("WGCNA")
 install.packages("reshape2")
 install.packages("broom")
 install.packages("rtracklayer")
+install.packages("RNOmni")
 
 # -- bioconductor packages
 BiocManager::install("edgeR")
