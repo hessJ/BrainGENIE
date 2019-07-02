@@ -35,7 +35,7 @@ load_cv_performance = function(path){
 }
 
 # 3. impute gene expression using coefficients from GTEx trained models
-predict_brain_gxp = function(mod, target, index = NULL, missing_prop = 0.01){
+predict_brain_gxp = function(mod, target, index = NULL, cor = 0.1, pval = 0.05, missing_prop = 0.01){
   
   if(is.null(index) == T) stop("Warning! Value for index is expected.")
   
@@ -44,7 +44,7 @@ predict_brain_gxp = function(mod, target, index = NULL, missing_prop = 0.01){
   
   # genes that have significant cross-validation accuracy
   sig_genes_cv = cv.perf[[index]]
-  
+  sig_genes_cv = sig_genes_cv[sig_genes_cv$Cor > cor & sig_genes_cv$Pval < pval, ] # adjustable filter 
   gene_id = gene_id[gene_id %in% sig_genes_cv$gene_id]
   
   message("\rNumber of genes that BrainGENIE will attempt to impute: ", length(gene_id)); cat("\n")
