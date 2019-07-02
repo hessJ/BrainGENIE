@@ -10,11 +10,9 @@ Running under: macOS Mojave 10.14.5
 ______
 ```
 
-## Please install the following R packages with the commands:
+## Install dependencies for BrainGENIE with the command in console:
 ```
-install.packages("rtracklayer");
-install.packages("plyr");
-install.packages("data.table")
+Rscript install.R
 ```
 
 ```
