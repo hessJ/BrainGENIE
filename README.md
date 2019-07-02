@@ -66,5 +66,5 @@ bg.output[[x]] = predict_brain_gxp(mod = iter[[x]], target = eDat, index = x, mi
 2. RPKM normalization using edgeR 
 3. Quantile normalization across samples using limma
 4. Inverse normal transformation
-
+5. Used residuals after regressing out age, sex, and top three genotype-based principal components
 
