@@ -58,6 +58,7 @@ predict_brain_gxp = function(mod, target, index = NULL, cor = 0.1, pval = 0.05, 
     # parameters
     intercept = mod[[x]]$intercept
     beta = mod[[x]]$coefs
+    names(beta) = gsub("predX", "", names(beta)) # simple patch. TODO: fix the names of LR models later
     
     # missing beta?
     common_beta = intersect(names(beta), colnames(target))
