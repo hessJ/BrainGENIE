@@ -248,13 +248,30 @@ fit_pca = function(varExplained = 0.8, gene_list = NULL){
 }
 
 # 6. predict PCA in new data
-predict_pca = function(dat = NULL, pca_model = NULL){
+predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
   if(is.null(pca)){stop("Please supply data frame for new samples")}
   if(is.null(pca_model)){stop("Please supply fitted PCA model")}
   if(class(pca_model) != "list"){stop("Expecting list object for fitted PCA model")}
   
   new_samples = dat[,colnames(dat) %in% pca_model$genes]
-  new_samples[is.na(new_samples)] = 0
+
+if(mean_imputation == TRUE){
+    
+    means = colMeans(new_samples,na.rm=TRUE)
+    for(n in 1:ncol(new_samples)){
+      new_samples[is.na(new_samples[,n]),n] = means[[n]]
+    }
+    
+  }
+  
+  if(mean_imputation == FALSE){
+    
+    na_detected = colSums(is.na(new_samples))
+    na_detected = na_detected[na_detected > 0]
+    if(length(na_detected) > 0){stop("Warning! Missing values (NAs) detected in new samples. Switch mean_imputation to TRUE to resolve this issue.")}
+    
+  }
+
   preds = predict(pca_model$PCA, newdata = new_samples)
   return(dat[,1:pca_model$n_comps])
 }
