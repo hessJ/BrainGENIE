@@ -18,7 +18,7 @@ ______
 Rscript install.R
 ```
 
-## Download GTEx data, sample factors, and covariates:
+## To run braingenie_pca.R, please download the following files from GTEx version 7 release:
 ```
 wget https://storage.googleapis.com/gtex_analysis_v7/rna_seq_data/GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct.gz
 wget https://storage.googleapis.com/gtex_analysis_v7/annotations/GTEx_v7_Annotations_SampleAttributesDS.txt
