@@ -28,8 +28,9 @@ wget https://storage.googleapis.com/gtex_analysis_v7/single_tissue_eqtl_data/GTE
 
 ### Number of trained gene-level prediction models in GTEx verison 7 (elastic net regression models):
 `(As of July 5, 2019, prefiltered for Pearson's r ≥ 0.1, p-value < 0.05)`
+
  |                        Tissue    |  Genes  |  Cor |
- |--------------------------------  | ------- | ---- |
+ | -------------------------------  | ------- | ---- |
  |                        Amygdala  | 14,666  | 0.47 |
  |  Anterior_cingulate_cortex_BA24  | 13,496  | 0.43 |
  |           Caudate_basal_ganglia  | 11,538  | 0.34 |
