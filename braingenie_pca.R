@@ -311,5 +311,5 @@ predict_brain_gxp = function(predicted_pca_in_new_samples = NULL, gtex_model = N
   
   if(scale == TRUE){
   predict_vals = scale(predict_vals)}
-  
+  return(data.frame(predict_vals))  
 }
