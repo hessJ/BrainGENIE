@@ -27,20 +27,21 @@ wget https://storage.googleapis.com/gtex_analysis_v7/single_tissue_eqtl_data/GTE
 ```
 
 ### Number of trained gene-level prediction models in GTEx verison 7 (elastic net regression models):
-`(As of June 24, 2019, prefiltered for Pearson's r ≥ 0.1, p-value < 0.05)`
- |                        Tissue     |  Genes   |  Cor
- |                        Amygdala  | 14,666  | 0.47
- |  Anterior_cingulate_cortex_BA24  | 13,496  | 0.43
- |           Caudate_basal_ganglia  | 11,538  | 0.34
- |           Cerebellar_Hemisphere  | 11,350  | 0.37
- |                      Cerebellum  | 13,777  | 0.35
- |                          Cortex  | 12,386  | 0.36
- |              Frontal_Cortex_BA9  | 12,135  | 0.36
- |                     Hippocampus  | 11,082  | 0.36
- |                    Hypothalamus  | 11,739  | 0.38
- | Nucleus_accumbens_basal_ganglia  | 10,842  | 0.34
- |           Putamen_basal_ganglia  | 11,010  | 0.36
- |                Substantia_nigra  | 13,149  | 0.44
+`(As of July 5, 2019, prefiltered for Pearson's r ≥ 0.1, p-value < 0.05)`
+ |                        Tissue    |  Genes  |  Cor |
+ |--------------------------------  | ------- | ---- |
+ |                        Amygdala  | 14,666  | 0.47 |
+ |  Anterior_cingulate_cortex_BA24  | 13,496  | 0.43 |
+ |           Caudate_basal_ganglia  | 11,538  | 0.34 |
+ |           Cerebellar_Hemisphere  | 11,350  | 0.37 |
+ |                      Cerebellum  | 13,777  | 0.35 |
+ |                          Cortex  | 12,386  | 0.36 |
+ |              Frontal_Cortex_BA9  | 12,135  | 0.36 |
+ |                     Hippocampus  | 11,082  | 0.36 |
+ |                    Hypothalamus  | 11,739  | 0.38 |
+ | Nucleus_accumbens_basal_ganglia  | 10,842  | 0.34 |
+ |           Putamen_basal_ganglia  | 11,010  | 0.36 |
+ |                Substantia_nigra  | 13,149  | 0.44 |
 
 ### Note: 
 `Gene IDs must be in Ensembl gene ID format # ENSG[XXXXXXXXXX].[X]`
