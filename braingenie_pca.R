@@ -126,8 +126,6 @@ load_gtf_file = function(path = NULL, filter_type = "gene"){
 
 # 5. Normalize transcriptomes
 normalize_read_counts  = function(brain_region_index = NULL, min_counts = 5, min_samples = 10, phenotypes = NULL, gtf_table = gtf_table, counts = rnaseq.counts) {
-   
-  brain_region_index = 1; min_counts = 5; min_samples = 10; counts = rnaseq.counts
   
   # warning message
   if(is.null(brain_region_index) == T){stop("Provide an index for a brain structure to proceed with data normalization properly.")}
@@ -148,6 +146,9 @@ normalize_read_counts  = function(brain_region_index = NULL, min_counts = 5, min
   blood_sample$SAMPID = gsub("[-]", ".", blood_sample$SAMPID)
   brain_sample$SAMPID = gsub("[-]", ".", brain_sample$SAMPID)
   brain_sample$SMTSD = gsub("Brain - ", "", brain_sample$SMTSD)
+  brain_sample$SMTSD = gsub(" ", "_", brain_sample$SMTSD)
+  brain_sample$SMTSD = gsub(")", "", brain_sample$SMTSD)
+  brain_sample$SMTSD = gsub("\\(", "", brain_sample$SMTSD)
   
   brain_sample = brain_sample[brain_sample$SMTSD %in% brain_structure, ]
   
@@ -244,11 +245,16 @@ normalize_read_counts  = function(brain_region_index = NULL, min_counts = 5, min
 # 6. principal component analysis in reference data
 fit_pca = function(varExplained = 0.8, gene_list = NULL){
   if(is.null(gene_list)){stop("Please provide a list of genes that are present in new samples in order to run PCA correctly")}
+  
   trained_pca_blood = normalized_counts_gtex$blood
   matched_genes = intersect(rownames(trained_pca_blood), gene_list)
   if(length(matched_genes) < 1){"No genes common to reference and new samples! Please check that IDs are in ENSEMBL gene ID format."}
   trained_pca_blood = trained_pca_blood[rownames(trained_pca_blood) %in% matched_genes, ]
+  
+  # check SD of columns
+  
   return_these_genes = rownames(trained_pca_blood)
+  
   pca_blood = prcomp(t(trained_pca_blood))
   eigenvalue_blood = (pca_blood$sdev^2)/sum(pca_blood$sdev^2)
   ncomps = cumsum(eigenvalue_blood)
@@ -258,7 +264,7 @@ fit_pca = function(varExplained = 0.8, gene_list = NULL){
 
 # 7. predict PCA in new data
 predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
-  if(is.null(pca)){stop("Please supply data frame for new samples")}
+  if(is.null(dat)){stop("Please supply data frame for new samples")}
   if(is.null(pca_model)){stop("Please supply fitted PCA model")}
   if(class(pca_model) != "list"){stop("Expecting list object for fitted PCA model")}
   
@@ -281,9 +287,8 @@ predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
     
   }
 
-  
   preds = predict(pca_model$PCA, newdata = new_samples)
-  return(dat[,1:pca_model$n_comps])
+  return(preds[,1:pca_model$n_comps])
 }
 
 # 8. Fit LR-PCA prediction model to GTEx counts, then apply the resulting weights to the PCA scores derived from new samples
@@ -305,11 +310,12 @@ fit_gtex_weights = function(counts = rnaseq.counts, pca_model  = NULL, cv_perfor
 # 9. apply brain transcriptome prediction model to blood PCA
 predict_brain_gxp = function(predicted_pca_in_new_samples = NULL, gtex_model = NULL, scale = TRUE){
   if(is.null(gtex_model)){stop("Please provide weights to gtex_model")}
-  if(is.null(blood_pca)){stop("Expecting argument for blood_pca")}
+  if(is.null(predicted_pca_in_new_samples)){stop("Expecting argument for predicted_pca_in_new_samples")}
   
-  predict_vals = predict(gtex_model, data.frame(predict_pca_new))
+  predict_vals = predict(gtex_model, data.frame(predicted_pca_in_new_samples))
   
   if(scale == TRUE){
   predict_vals = scale(predict_vals)}
-  return(data.frame(predict_vals))  
+  
+  return(data.frame(predict_vals))
 }
