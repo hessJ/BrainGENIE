@@ -16,7 +16,8 @@ require(readxl)
 require(data.table)
 require(rtracklayer)
 
-# 1. Load count data from GTEx samples
+
+# 1a. Load count data from GTEx samples
 load_counts = function(path_to_counts = NULL){
   # warning message
   if(is.null(path_to_counts) == T){stop("Please provide the full directory path to the reference RNA-sequencing counts")}
@@ -25,6 +26,12 @@ load_counts = function(path_to_counts = NULL){
   rownames(temp) = temp$Name
   temp = temp[,!colnames(temp) %in% c("Name","Description")]
   rnaseq.counts <<- temp
+}
+
+# 1b. load cross-validation performance 
+load_cv_performance = function(path_to_cv_txt = NULL){
+  if(is.null(path_to_cv_txt)){stop("Please provide full path to pcaBrainGENIE_cv.performance.txt file")}
+  return(data.frame(fread(path_to_cv_txt,header=TRUE,sep="\t")))
 }
 
 # 2. Load sample factors and covariates
@@ -58,6 +65,8 @@ load_sample_factors = function(path_to_attributes = NULL, path_to_phenotypes = N
 }
 
 
+
+# 3. load covariates
 load_covariates = function(path_to_blood_covariates = NULL, path_to_brain_covariates = NULL){
   # warning message
   if(is.null(path_to_blood_covariates)){stop("Provide path to the covariate file")}
@@ -80,7 +89,7 @@ load_covariates = function(path_to_blood_covariates = NULL, path_to_brain_covari
   covariates_from_gtex <<- list(blood_covariates = blood_covs, brain_covariates = brain_covs)
 }
 
-# 3. Pair donor ids
+# 4. Pair donor ids
 paired_donor_ids = function(phens = NULL){
   # warning message
   if(is.null(phens) == T){stop("Provide the object name for GTEX phenotypes")}
@@ -115,7 +124,7 @@ load_gtf_file = function(path = NULL, filter_type = "gene"){
 }
 
 
-# 4. Normalize transcriptomes
+# 5. Normalize transcriptomes
 normalize_read_counts  = function(brain_region_index = NULL, min_counts = 5, min_samples = 10, phenotypes = NULL, gtf_table = gtf_table, counts = rnaseq.counts) {
    
   brain_region_index = 1; min_counts = 5; min_samples = 10; counts = rnaseq.counts
@@ -232,7 +241,7 @@ normalize_read_counts  = function(brain_region_index = NULL, min_counts = 5, min
 }
 
 
-# 5. principal component analysis in reference data
+# 6. principal component analysis in reference data
 fit_pca = function(varExplained = 0.8, gene_list = NULL){
   if(is.null(gene_list)){stop("Please provide a list of genes that are present in new samples in order to run PCA correctly")}
   trained_pca_blood = normalized_counts_gtex$blood
@@ -247,15 +256,15 @@ fit_pca = function(varExplained = 0.8, gene_list = NULL){
   return(list(PCA = pca_blood, n_comps = ncomps_select, genes = return_these_genes))
 }
 
-# 6. predict PCA in new data
+# 7. predict PCA in new data
 predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
   if(is.null(pca)){stop("Please supply data frame for new samples")}
   if(is.null(pca_model)){stop("Please supply fitted PCA model")}
   if(class(pca_model) != "list"){stop("Expecting list object for fitted PCA model")}
   
   new_samples = dat[,colnames(dat) %in% pca_model$genes]
-
-if(mean_imputation == TRUE){
+  
+  if(mean_imputation == TRUE){
     
     means = colMeans(new_samples,na.rm=TRUE)
     for(n in 1:ncol(new_samples)){
@@ -272,21 +281,28 @@ if(mean_imputation == TRUE){
     
   }
 
+  
   preds = predict(pca_model$PCA, newdata = new_samples)
   return(dat[,1:pca_model$n_comps])
 }
 
-# 7. Fit LR-PCA prediction model to GTEx counts, then apply the resulting weights to the PCA scores derived from new samples
-fit_gtex_weights = function(counts = rnaseq.counts, pca_model  = NULL){
+# 8. Fit LR-PCA prediction model to GTEx counts, then apply the resulting weights to the PCA scores derived from new samples
+fit_gtex_weights = function(counts = rnaseq.counts, pca_model  = NULL, cv_performance = NULL, index = 1, cor = 0.1, pval = 0.05){
   if(is.null(pca_model)){stop("Argument required for blood_PCA")}
   # TODO: Linear regression: brain gene ~ blood PCA
   Y = data.frame(t(normalized_counts_gtex$brain)) # select normalized GTEx brain counts
+  # filter Y by genes that are well predicted from 5-fold cross-validation
+  cv_filter = cv_performance[(cv_performance$Tissue %in% names(common_ids)[[index]] & cv_performance$Cor >= cor & cv_performance$Pval < pval), ]
+  matched_genes = intersect(colnames(Y), cv_filter$gene)
+  if(length(matched_genes) < 1){stop("Unexpected issue! No matching gene IDs between CV performance file and normalized GTEx counts.")}
+  message("\rFitting LR model for: ", length(matched_genes), " genes")
+  Y = Y[,colnames(Y) %in% cv_filter$gene, ]
   X = data.frame(pca_model$PCA$x[,1:pca_model$n_comps]) # use PCA model derived from GTEx blood counts
   fit = lm(as.matrix(Y) ~ ., data = X) # fit a LR model per gene
   return(fit) # return model
 }
 
-# 8. apply brain transcriptome prediction model to blood PCA
+# 9. apply brain transcriptome prediction model to blood PCA
 predict_brain_gxp = function(predicted_pca_in_new_samples = NULL, gtex_model = NULL, scale = TRUE){
   if(is.null(gtex_model)){stop("Please provide weights to gtex_model")}
   if(is.null(blood_pca)){stop("Expecting argument for blood_pca")}
@@ -297,4 +313,3 @@ predict_brain_gxp = function(predicted_pca_in_new_samples = NULL, gtex_model = N
   predict_vals = scale(predict_vals)}
   
 }
-
