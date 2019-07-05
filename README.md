@@ -18,6 +18,10 @@ ______
 Rscript install.R
 ```
 
+## Use braingene.R to perform imputation with:
+1. Elastic net models (ENET)
+2. Linear regression models (LR)
+
 ## To run braingenie_pca.R, please download the following files from GTEx version 7 release:
 ```
 wget https://storage.googleapis.com/gtex_analysis_v7/rna_seq_data/GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct.gz
