@@ -45,7 +45,8 @@ predict_brain_gxp = function(mod, target, index = NULL, cor = 0.1, pval = 0.05, 
   # genes that have significant cross-validation accuracy
   sig_genes_cv = cv.perf[[index]]
   sig_genes_cv = sig_genes_cv[sig_genes_cv$Cor > cor & sig_genes_cv$Pval < pval, ] # adjustable filter 
-  gene_id = gene_id[gene_id %in% sig_genes_cv$gene_id]
+  gene_id = gene_id[gene_id %in% sig_genes_cv$gene_id] # only try to predict well imputed genes
+  gene_id = gene_id[gene_id %in% colnames(target)] # only use genes that are present in target sample
   
   message("\rNumber of genes that BrainGENIE will attempt to impute: ", length(gene_id)); cat("\n")
   
@@ -56,8 +57,9 @@ predict_brain_gxp = function(mod, target, index = NULL, cor = 0.1, pval = 0.05, 
     cat("\rImputing expression values:", round(x/length(gene_id) * 100, 1), " %")
     
     # parameters
-    intercept = mod[[x]]$intercept
-    beta = mod[[x]]$coefs
+    mod_select = mod[names(mod) %in% gene_id[[x]]]
+    intercept = mod_select[[1]][[2]][[1]]
+    beta = mod_select[[1]][[3]]
     names(beta) = gsub("predX", "", names(beta)) # simple patch. TODO: fix the names of LR models later
     
     # missing beta?
