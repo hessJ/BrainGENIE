@@ -15,6 +15,13 @@ require(plyr)
 require(data.table)
 
 # == Functions
+load_gtf_file = function(path = NULL, filter_type = "gene"){
+  if(is.null(path)){stop("ERROR: Expecting file path for loading the GTF file")}
+  if(is.null(filter_type)){stop("Please provide a biotype to filter GTF")}
+  loaded = data.frame(rtracklayer::import(path))
+  loaded = loaded[loaded$type %in% filter_type,]
+  return(loaded)
+}
 
 # 1. loading trained models
 load_models = function(path){
@@ -45,6 +52,7 @@ predict_brain_gxp = function(mod, target, index = NULL, cor = 0.1, pval = 0.05, 
   # genes that have significant cross-validation accuracy
   sig_genes_cv = cv.perf[[index]]
   sig_genes_cv = sig_genes_cv[sig_genes_cv$Cor > cor & sig_genes_cv$Pval < pval, ] # adjustable filter 
+  names(sig_genes_cv)[names(sig_genes_cv) %in% "Gene"] = 'gene_id'
   gene_id = gene_id[gene_id %in% sig_genes_cv$gene_id] # only try to predict well imputed genes
   gene_id = gene_id[gene_id %in% colnames(target)] # only use genes that are present in target sample
   
