@@ -16,13 +16,8 @@ ______
 ## Install dependencies for BrainGENIE with the command in console:
 `Rscript install.R`
 
-## Use braingene.R to perform imputation with:
-1. Elastic net models (ENET)
-2. Linear regression models (LR)
-
 ## Download normalized residual gene expression data (paired blood-brain) for GTEx version 8 release:
 https://www.synapse.org/#!Synapse:syn21739266/files/
-
 
 ### Number of significant gene-level prediction made by BrainGENIE:
 `(As of March 6, 2020, prefiltered for cross-validation R^2 ≥ 0.01, cross-valdidation FDRp-value < 0.05, and test-set R^2 ≥ 0.01)`
@@ -52,6 +47,5 @@ https://www.synapse.org/#!Synapse:syn21739266/files/
 4. Regressed covariates out of expression data, used residuals for model training cross-validation
  - Brain: Age, sex, top three genotype-based principal components, PCR method, platform, ischemic time, RIN, and death record by Hardy  scale.
  - Blood: Age, sex, top three genotype-based principal components, top three CIBERSORT principal components, PCR method, platform, ischemic time, RIN, and death record by Hardy  scale.
- 
- 
 
+ 
