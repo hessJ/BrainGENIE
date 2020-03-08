@@ -290,8 +290,8 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   pca.in.test = predict(pca.blood.train, x_test)
   
   # format PCA predictor matrices based on chosen number of components 
-  pca.TRAIN = data.frame(pca.blood.train$x[,1:use_n_comps[[k]]])
-  pca.TEST = data.frame(pca.in.test[,1:use_n_comps[[k]]])
+  pca.TRAIN = data.frame(pca.blood.train$x[,1:use_n_comps])
+  pca.TEST = data.frame(pca.in.test[,1:use_n_comps])
   
 
   # apply PCA model to predict gene expression in brain
@@ -318,7 +318,7 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   colnames(final.model)[-1] = paste("final_", colnames(final.model)[-1], sep="")
   
   
-  colnames(perf_train)[-c(1:2)] = paste("cv_", colnames(perf_train)[-c(1:2)], sep="")
+  colnames(perf_train)[-c(1)] = paste("cv_", colnames(perf_train)[-c(1)], sep="")
   all.models.merge = merge(perf_train, final.model, by='gene')
   all.models.merge$final_test_fdr = p.adjust(all.models.merge$final_test_pval ,"fdr")
   
@@ -326,9 +326,10 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
     all.models.merge = perf_train
   }
   
-  # save output as .Rdata file
-  saveRDS(all.models.merge, file=paste(tissue, "_BrainGENIE_retrain-",ncomps,".Rdata", sep=""))
+  all.models.merge$tissue = tissue
   
+  # save output as .Rdata file
+  saveRDS(all.models.merge, file=paste(output, "/", tissue, "_BrainGENIE_retrain-",ncomps,".Rdata", sep=""))
   
 }
 
