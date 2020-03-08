@@ -58,7 +58,7 @@ fit_pca = function(gene_list = NULL, autorun = TRUE){
 }
 
 # 4. predict PCA in new data
-predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
+predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = FALSE){
   
   if(is.null(dat)){stop("Please supply data frame for new samples")}
   if(is.null(pca_model)){stop("Please supply fitted PCA model")}
@@ -89,18 +89,21 @@ predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = TRUE){
 
 
 # 5. Fit LR-PCA prediction model to GTEx counts, then apply the resulting weights to the PCA scores derived from new samples
-fit_lr_weights_in_gtex = function(pca_model  = NULL, cv_performance = NULL, n_comps = 20){
+fit_lr_weights_in_gtex = function(pca_model  = NULL, tissue = NULL, cv_performance = NULL, n_comps = 20){
+  if(is.null(tissue)){stop("Please specify a tissue based on nomenclature available in the cross-validation table")}
   if(is.null(pca_model)){stop("Argument required for blood_PCA")}
   # TODO: Linear regression: brain gene ~ blood PCA
   Y = data.frame(t(brain_expr)) # select normalized GTEx brain counts
   # filter Y by genes that are well predicted from 5-fold cross-validation
+  cv_performance = cv_performance[cv_performance$tissue %in% tissue, ]
   matched_genes = intersect(colnames(Y), cv_performance$gene)
   if(length(matched_genes) < 1){stop("Unexpected issue! No matching gene IDs between CV performance file and normalized GTEx counts.")}
   common_genes = intersect(matched_genes, blood.pca$genes)
   if(length(common_genes) < 1){stop("Unexpected issue! No genes available to run LR.")}
   message("\rTraining LR models for: ", length(common_genes), " genes")
-  Y = Y[,colnames(Y) %in% cv_performance$gene, ]
-  X = data.frame(pca_model$pca$x[,1:n_comps]) # use PCA model derived from GTEx blood counts
+  
+  Y = Y[,colnames(Y) %in% common_genes, ]
+  X = data.frame(pca_model$pca$x[,1:n_comps]) # use PCA model derived from GTEx paired blood-brain data
   fit = lm(as.matrix(Y) ~ ., data = X) # fit a LR model per gene
   return(fit) # return model
 }
@@ -135,6 +138,9 @@ convert_hgnc_to_ensg = function(hgnc = NULL, gtf_path = NULL){
   # load GTF file
   gtf = data.frame(fread(gtf_path))
   gtf = gtf[,colnames(gtf) %in% c("gene_id", "gene_name")]
+  gtf$gene_name = gsub("[-]", ".", gtf$gene_name)
+  
+  hgnc = gsub("[-]", ".", hgnc)
   
   symbols = data.frame(gene_name = hgnc)
   convert = merge(symbols, gtf, by='gene_name')
