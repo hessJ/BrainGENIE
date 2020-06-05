@@ -39,7 +39,10 @@ load_cv_performance = function(file_path = NULL){
 }
 
 # 3. principal component analysis in reference data
-fit_pca = function(gene_list = NULL, autorun = TRUE){
+fit_pca = function(gene_list = NULL, autorun = FALSE){
+  
+  
+  if(autorun == FALSE & is.null(gene_list) == T){stop("Gene list is expected!")}
   
   trained_pca_blood = blood_expr
   
@@ -89,20 +92,21 @@ predict_pca = function(dat = NULL, pca_model = NULL, mean_imputation = FALSE){
 
 
 # 5. Fit LR-PCA prediction model to GTEx counts, then apply the resulting weights to the PCA scores derived from new samples
-fit_lr_weights_in_gtex = function(pca_model  = NULL, tissue = NULL, cv_performance = NULL, n_comps = 20){
+fit_lr_weights_in_gtex = function(pca_model  = NULL, tissue = NULL, gene_list = NULL, n_comps = 20){
   if(is.null(tissue)){stop("Please specify a tissue based on nomenclature available in the cross-validation table")}
   if(is.null(pca_model)){stop("Argument required for blood_PCA")}
+  if(is.null(gene_list)){stop("Please specify gene IDs to include in the training process.")}
   # TODO: Linear regression: brain gene ~ blood PCA
   Y = data.frame(t(brain_expr)) # select normalized GTEx brain counts
   # filter Y by genes that are well predicted from 5-fold cross-validation
-  cv_performance = cv_performance[cv_performance$tissue %in% tissue, ]
-  matched_genes = intersect(colnames(Y), cv_performance$gene)
+  cv_performance = gene_list
+  matched_genes = intersect(colnames(Y), cv_performance)
   if(length(matched_genes) < 1){stop("Unexpected issue! No matching gene IDs between CV performance file and normalized GTEx counts.")}
-  common_genes = intersect(matched_genes, blood.pca$genes)
-  if(length(common_genes) < 1){stop("Unexpected issue! No genes available to run LR.")}
-  message("\rTraining LR models for: ", length(common_genes), " genes")
+  common_genes = intersect(matched_genes, pca_model$genes)
+  if(length(matched_genes) < 1){stop("Unexpected issue! No genes available to run LR.")}
+  message("\rTraining LR models for: ", length(matched_genes), " genes")
   
-  Y = Y[,colnames(Y) %in% common_genes, ]
+  Y = Y[,colnames(Y) %in% matched_genes, ]
   X = data.frame(pca_model$pca$x[,1:n_comps]) # use PCA model derived from GTEx paired blood-brain data
   fit = lm(as.matrix(Y) ~ ., data = X) # fit a LR model per gene
   return(fit) # return model
@@ -330,6 +334,8 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   
   # save output as .Rdata file
   saveRDS(all.models.merge, file=paste(output, "/", tissue, "_BrainGENIE_retrain-",ncomps,".Rdata", sep=""))
+  
+  perf <<- all.models.merge
   
 }
 
