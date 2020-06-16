@@ -7,59 +7,16 @@ require(dplyr)
 require(tidyr)
 source("~/Google Drive/mac_storage/script_lib/braingenie.functions.R")
 
-# load datafiles containig phenotypes and subject IDs 
-
-# load GTF
-gtf = fread("~/Documents/gene_map/gencode.v26.GRCh38.genes.gtf")
-gtf = gtf[,colnames(gtf) %in% c("gene_id", "gene_name"),with=F]
-colnames(gtf)[1] = 'gene'
-
-
-phenotypes = readRDS("/Users/jonathanhess/ncbi/dbGaP-23733/files/GTEX_SampleAttributePhenos.Rdata")
-# phenotypes = phenotypes[phenotypes$SAMPID.x %in% colnames(counts), ]
-
-# --- blood samples
-blood_samples = phenotypes[phenotypes$SMTSD %in% "Whole Blood", ]
-
-# -- brain samples (delete unwanted elements from string to match labels in predixcan predictdb data set)
-brain_samples = phenotypes[phenotypes$SMTS %in% "Brain", ]
-brain_samples = brain_samples[!grepl("spinal cord", ignore.case = TRUE, brain_samples$SMTSD), ]
-brain_samples$SMTSD = gsub("Brain - ", "", brain_samples$SMTSD)
-brain_samples$SMTSD = gsub(" ", "_", brain_samples$SMTSD)
-brain_samples$SMTSD = gsub(")", "", brain_samples$SMTSD)
-brain_samples$SMTSD = gsub("\\(", "", brain_samples$SMTSD)
-unique(brain_samples$SMTSD)
-
-# -- number of overlapping samples
-split_names = split(brain_samples[,c("dbGaP_Subject_ID", "SMTSD")], brain_samples$SMTSD)
-
-lapply(split_names, function(x) length(unique(x$SID)))
-
-overlaps = lapply(split_names, function(x) length(intersect(x$dbGaP_Subject_ID, blood_samples$dbGaP_Subject_ID)))
-overlaps = ldply(overlaps, cbind)
-colnames(overlaps) = c("Tissue", "OverlapWblood")
-overlaps = overlaps[order(overlaps$OverlapWblood, decreasing = TRUE), ]
-
-# color values
-values = colorRampPalette(brewer.pal(n=8,name='Set1'))(nrow(overlaps))
-
-# -- age, gender, race stats
-ddply(blood_samples, .(SEX), summarize, Mean = mean(AGE), SD = sd(AGE))
-ddply(brain_samples, .(SEX), summarize, Mean = mean(AGE), SD = sd(AGE))
-
-# -- list with paired blood-brain sample IDs
-common_ids = lapply(split_names, function(x) intersect(x$dbGaP_Subject_ID, blood_samples$dbGaP_Subject_ID))
-
-
 ######################################################################
 ######################################################################
-#################### custom braingenie commands ######################
+#################### custom braingenie functions #####################
 ######################################################################
 ######################################################################
 
 # function to run repeated cross-validation
-expr_split_for_train_test = function(path_to_expr_data = "~/Documents/braingenie/version8/expression/diff_covs_brain_blood/", brain_structure = NULL,  training_ids = NULL, test_set_ids = NULL){
+expr_split_for_train_test = function(path_to_expr_data = NULL, brain_structure = NULL,  training_ids = NULL, test_set_ids = NULL){
   
+  if(is.null(path_to_expr_data)){stop("Please supply full path to paired blood-brain transcriptome data (instructions for download @ https://github.com/hessJ/BrainGENIE/tree/master/expression")}
   if(is.null(brain_structure)){stop("Please supply name of brain region for model training, must comply with specific GTEx nomenclature (see documentation)!")}
   if(is.null(training_ids)){stop("Please supply GTEx subject IDs for training sample")}
   if(is.null(test_set_ids)){stop("Please supply GTEx subject IDs that comprise the test sample")}
@@ -80,7 +37,7 @@ expr_split_for_train_test = function(path_to_expr_data = "~/Documents/braingenie
   
   blood_counts = blood_counts[,colnames(blood_counts) %in% common.sids]
   brain_counts = brain_counts[,colnames(blood_counts) %in% common.sids]
-
+  
   test.set.sids = test_set_ids
   test.set = gsub("[-]", ".", unique(phenotypes$SUBJID.x[phenotypes$dbGaP_Subject_ID %in% test.set.sids]))
   test.set = gsub("GTEX", "GTEx", test.set)
@@ -105,7 +62,8 @@ create.folds = function(nfolds = 10, ids = NULL){
   sample(dplyr::ntile(ids, nfolds)) # random folds
 }
 
-run_repeated_cv = function(nfolds = 10, mode = 'lm', brain_structure = NULL, n_repeats = 3, use_n_comps = 20){
+run_repeated_cv = function(nfolds = 10, mode = 'lm', brain_structure = NULL, n_repeats = 0, use_n_comps = 20){
+  
   list_objects = ls()
   
   save_performance_repeats = list()
@@ -114,9 +72,9 @@ run_repeated_cv = function(nfolds = 10, mode = 'lm', brain_structure = NULL, n_r
       cat("\n")
       cat("\rCV repeat: ", r)
     }
-  # make folds 
-  folds = create.folds(nfolds = nfolds, ids=colnames(training_brain))
-  
+    # make folds 
+    folds = create.folds(nfolds = nfolds, ids=colnames(training_brain))
+    
     allmods = list()
     for(fold in 1:max(folds)){
       
@@ -209,7 +167,7 @@ run_repeated_cv = function(nfolds = 10, mode = 'lm', brain_structure = NULL, n_r
     
     perf_train$pval = pnorm(-abs(perf_train$Zscore))
     perf_train$fdr = p.adjust(perf_train$pval, "fdr")
-   
+    
     colnames(perf_train)[-c(1:2)] = paste("cv_", colnames(perf_train)[-c(1:2)], sep="")
     perf_train$n_comps = use_n_comps
     
@@ -217,7 +175,7 @@ run_repeated_cv = function(nfolds = 10, mode = 'lm', brain_structure = NULL, n_r
   }
   
   save_performance_cv <<- save_performance_repeats
-
+  
 }
 
 # compute mean performance over repeated CV folds 
@@ -229,16 +187,16 @@ calc_mean_cv_performance = function(nfolds = 10){
   
   
   if(length(save_performance_cv) > 1){
-  n_repeats = length(save_performance_cv) # number of repeats that we need to summarize performance over
-  
-  # summarize performance with ddply
-  sum_z = ddply(all_cv, .(gene), summarize, 
-                zscore_est = sum(cv_Zscore) / sqrt(n_repeats), 
-                out_sample_cv_cor = mean(Cor), 
-                in_sample_cv_cor = mean(all_cv$cv_train.cor))
-  sum_z$zscore_pval <- 2*pnorm(abs(sum_z$zscore_est), lower.tail = FALSE)
-  sum_z$fdr = p.adjust(sum_z$zscore_pval, 'fdr')
-  sum_z$rsq = sum_z$out_sample_cv_cor^2  
+    n_repeats = length(save_performance_cv) # number of repeats that we need to summarize performance over
+    
+    # summarize performance with ddply
+    sum_z = ddply(all_cv, .(gene), summarize, 
+                  zscore_est = sum(cv_Zscore) / sqrt(n_repeats), 
+                  out_sample_cv_cor = mean(Cor), 
+                  in_sample_cv_cor = mean(cv_train.cor))
+    sum_z$zscore_pval <- 2*pnorm(abs(sum_z$zscore_est), lower.tail = FALSE)
+    sum_z$fdr = p.adjust(sum_z$zscore_pval, 'fdr')
+    sum_z$rsq = sum_z$out_sample_cv_cor^2  
   } else {
     sum_z = data.frame(gene = all_cv$gene,
                        zcore_est = all_cv$cv_Zscore, 
@@ -247,10 +205,10 @@ calc_mean_cv_performance = function(nfolds = 10){
                        in_sample_cv_cor = all_cv$cv_train.cor,
                        fdr = all_cv$cv_fdr,
                        rsq = all_cv$cv_Rsq)
-    }
+  }
   
   sum_z_out <<- sum_z
-
+  
 }
 
 # apply most generalizable model to test set
@@ -297,7 +255,7 @@ apply_models_to_test_set = function(use_n_comps = 20, sig_gene_list = NULL){
   est = lapply(test.cors, function(x) x$estimate)
   pval = lapply(test.cors ,function(x) x$p.value)
   test.cors = data.frame(test_cor = unlist(est), 
-             test_pval = unlist(pval))
+                         test_pval = unlist(pval))
   test.cors$test_rsq = test.cors$test_cor^2
   test.cors$N = nrow(pca.TEST)
   
