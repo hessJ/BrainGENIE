@@ -41,7 +41,6 @@ load_cv_performance = function(file_path = NULL){
 # 3. principal component analysis in reference data
 fit_pca = function(gene_list = NULL, autorun = FALSE){
   
-  
   if(autorun == FALSE & is.null(gene_list) == T){stop("Gene list is expected!")}
   
   trained_pca_blood = blood_expr
@@ -271,7 +270,7 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
                            sample.size = mean(N),
                            Zscore = sum(fisherZ) / sqrt(length(unique(folds)))),by=c("gene")]
   
-  perf_train$pval = pnorm(-abs(perf_train$Zscore))
+  perf_train$pval = 2*pnorm(abs(perf_train$Zscore), lower.tail = FALSE) # calculate two-tailed p-value based on combined z-score
   perf_train$fdr = p.adjust(perf_train$pval, "fdr")
   
   
