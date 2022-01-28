@@ -187,7 +187,7 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
 
   brain_counts = brain_expr
   blood_counts = blood_expr
-  blood_counts = blood_counts[rownames(brain_counts) %in% gene_list, ]
+  blood_counts = blood_counts[rownames(blood_counts) %in% gene_list, ]
   blood_counts = blood_counts[!rowSums(is.na(blood_counts)), ]
   
   # optional: define test set
