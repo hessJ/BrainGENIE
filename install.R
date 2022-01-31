@@ -7,6 +7,8 @@ install.packages("reshape2")
 install.packages("broom")
 install.packages("rtracklayer")
 install.packages("RNOmni")
+install.packages("tensorflow")
+install.packages("keras")
 
 # -- bioconductor packages
 BiocManager::install("edgeR")
