@@ -47,8 +47,8 @@ retrain_autoencoder_gtex = function(gene_list = NULL, output = "", tissue = NULL
       layer_dense(units = ncol(x_train))
 
     model %>% compile(
-      # loss = "mean_squared_error",
-      loss="mean_absolute_error",
+      loss = "mean_squared_error",
+#       loss="mean_absolute_error",
       optimizer = "adam"
     )
 
@@ -179,7 +179,8 @@ recover_latent_space = function(use_n_comps = 20, newdata = NULL){
     layer_dense(units = ncol(x_train))
 
   deploy %>% compile(
-    loss="mean_absolute_error",
+    loss = "mean_squared_error",
+#     loss="mean_absolute_error",
     optimizer = "adam"
   )
 
