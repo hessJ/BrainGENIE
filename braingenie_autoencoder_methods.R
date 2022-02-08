@@ -1,3 +1,4 @@
+# reticulate::use_python("/usr/local/bin/python3") # <-- this was necessary on my local system (disambiguates due the multiple versions of python installed)
 require(tensorflow)
 require(keras)
 
