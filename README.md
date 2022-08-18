@@ -17,7 +17,7 @@ ______
 `Rscript install.R`
 
 ## Download normalized residual gene expression data (paired blood-brain) for GTEx version 8 release:
-https://www.synapse.org/#!Synapse:syn21739266/files/
+https://zenodo.org/record/6350240/files/normalized_expression_dat_gtexv8.tar.gz?download=1
 
 ### Number of significant gene-level prediction made by BrainGENIE:
 `(As of March 6, 2020, prefiltered for cross-validation R^2 ≥ 0.01, cross-valdidation FDRp-value < 0.05, and test-set R^2 ≥ 0.01)`
