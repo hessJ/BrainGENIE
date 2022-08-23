@@ -23,6 +23,7 @@ load_expr_data = function(path_to_data = NULL){
   if(is.null(path_to_data) == T){stop("Please provide a directory path")}
   # load data
   data_files = list.files(path_to_data, pattern=".Rdata", full.names=T)
+  data_files = data_files[!grepl("Predictors", data_files)]
   blood_expr = data.frame(t(readRDS(data_files[grepl("WholeBlood", data_files)])))
   brain_expr = data.frame(t(readRDS(data_files[!grepl("WholeBlood", data_files)])))
   # retain same samples
