@@ -34,9 +34,9 @@ load_expr_data = function(path_to_data = NULL){
 
 
 # 2. load cross-validation performance 
-load_cv_performance = function(file_path = NULL){
-  if(is.null(file_path)){stop("Please provide full path to .Rdata file with cross-validation accuracies (if relying on pre-trained models")}
-  return(data.frame(readRDS(file_path)))
+load_cv_performance = function(){
+  if(is.null(output_file_string)){stop("Please run cross-validation step to obtain gene-level prediction accuracies for BrainGENIE")}
+  return(data.frame(readRDS(output_file_string)))
 }
 
 # 3. principal component analysis in reference data
@@ -183,6 +183,9 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   if(is.null(n_folds) == T){stop("Specify the number of cross-validation folds")}
   if(is.null(tissue) == T){stop("Specify the name of brain region for model training")}
   if(output == ""){warning("No output directory specified!")}
+  
+  # make output file path into string for loading CV performance
+  output_file_string <<- paste(output, "/", tissue, "_BrainGENIE_retrain-", ncomps, ".Rdata", sep="")
   
   use_n_comps = ncomps
 
