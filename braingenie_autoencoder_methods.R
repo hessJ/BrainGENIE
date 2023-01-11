@@ -171,7 +171,8 @@ retrain_autoencoder_gtex = function(gene_list = NULL, dropout_rate = 0.1, n_batc
   all.models.merge$tissue = tissue
   
   # save output as .Rdata file
-  saveRDS(all.models.merge, file=paste(output, "/", tissue, "_BrainGENIE_retrain-",ncomps,".Rdata", sep=""))
+  output_file_string <<- paste(output, "/", tissue, "_BrainGENIE_retrain-", ncomps, ".Rdata", sep="")            
+  saveRDS(all.models.merge, file=output_file_string)
   
   perf <<- all.models.merge
   
@@ -474,7 +475,8 @@ retrain_multi_layer_autoencoder_gtex = function(gene_list = NULL,
   all.models.merge$tissue = tissue
   
   # save output as .Rdata file
-  saveRDS(all.models.merge, file=paste(output, "/", tissue, "_BrainGENIE_retrain-",ncomps,".Rdata", sep=""))
+  output_file_string <<- paste(output, "/", tissue, "_BrainGENIE_retrain-", ncomps, ".Rdata", sep="")            
+  saveRDS(all.models.merge, file=output_file_string)
   
   perf <<- all.models.merge
   
