@@ -19,6 +19,9 @@ ______
 ## Download normalized residual gene expression data (paired blood-brain) for GTEx version 8 release:
 https://zenodo.org/record/6350240/files/normalized_expression_dat_gtexv8.tar.gz?download=1
 
+## Decompress the archive of paired blood-brain data with the following command in terminal:
+tar -xzvf normalized_expression_dat_gtexv8.tar.gz
+
 ### Vignette for getting started:
 https://github.com/hessJ/BrainGENIE/wiki/How-to-run-BrainGENIE
 
