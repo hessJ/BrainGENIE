@@ -20,7 +20,7 @@ ______
 https://zenodo.org/record/6350240/files/normalized_expression_dat_gtexv8.tar.gz?download=1
 
 ## Extract the data from the compressed tar archive with the following command in terminal:
-tar -xzvf normalized_expression_dat_gtexv8.tar.gz
+`tar -xzvf normalized_expression_dat_gtexv8.tar.gz`
 
 ### Vignette for getting started:
 https://github.com/hessJ/BrainGENIE/wiki/How-to-run-BrainGENIE
