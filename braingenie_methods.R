@@ -209,7 +209,8 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   # set up fold ids for cross-validation
   folds = create.folds(nfolds = n_folds, ids=colnames(brain_counts))
   
-  allmods = list()
+  allmods = list();
+  pred.test.expr = list()
   for(fold in 1:max(folds)){
 
     cat("\rFold: ", fold);cat("\n")
@@ -251,9 +252,15 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
     test.cors$test_rsq = test.cors$test_cor^2
     test.cors$N = nrow(pca.TEST)
     allmods[[fold]] = data.frame(cbind(train.cors, test.cors[,-1]))
-  }
+
+                       # save predicted expr for the validation fold
+    pred.test.expr[[fold]] = data.frame(sampleid = rownames(pred.test), pred.test, check.names = F)
+                       }
+
+  # combine all validation expr data into single d.f.
+  validation_expr <<- ldply(pred.test.expr)
   
-  stats = ldply(allmods)
+                       stats = ldply(allmods)
   
   # deal with missing values (NAs)
   stats$test_cor[is.na(stats$test_cor)] = 0
