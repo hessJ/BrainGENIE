@@ -170,6 +170,32 @@ convert_ensg_to_hgnc = function(ensg = NULL, gtf_path = NULL){
 }
 
 
+## Quick convert ensembl gene ids to hgnc symbols
+quick_convert_ensg_to_hgnc = function(){
+  # convert blood gene expression ids to hgnc symbols
+  convert = convert_ensg_to_hgnc(ensg = rownames(blood_expr), gtf_path = "~/Documents/git_repo/BrainGENIE/gtf/gencode.v26.GRCh38.genes.gtf")
+  convert = convert[match(rownames(blood_expr), convert$gene_id), ]
+  dat = data.frame(symbol = convert$gene_name, blood_expr)
+  dat = data.table(dat)
+  dat = dat[,lapply(.SD, median),by=c("symbol")]
+  dat = data.frame(dat)
+  rownames(dat) = dat$symbol
+  dat = dat[,!colnames(dat) %in% "symbol"]
+  blood_expr <<- dat
+  
+  # convert brain gene expression ids to hgnc symbols
+  convert = convert_ensg_to_hgnc(ensg = rownames(brain_expr), gtf_path = "~/Documents/git_repo/BrainGENIE/gtf/gencode.v26.GRCh38.genes.gtf")
+  convert = convert[match(rownames(brain_expr), convert$gene_id), ]
+  dat = data.frame(symbol = convert$gene_name, brain_expr)
+  dat = data.table(dat)
+  dat = dat[,lapply(.SD, median),by=c("symbol")]
+  dat = data.frame(dat)
+  rownames(dat) = dat$symbol
+  dat = dat[,!colnames(dat) %in% "symbol"]
+  brain_expr <<- dat
+}
+
+
 # create folds for cross-validation
 create.folds = function(nfolds = 5, ids = NULL){
   if(is.null(ids)){stop("Expecting IDs column for creating folds")}
