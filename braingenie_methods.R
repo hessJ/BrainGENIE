@@ -171,9 +171,10 @@ convert_ensg_to_hgnc = function(ensg = NULL, gtf_path = NULL){
 
 
 ## Quick convert ensembl gene ids to hgnc symbols
-quick_convert_ensg_to_hgnc = function(){
+quick_convert_ensg_to_hgnc = function(gtf_path=NULL){
+  if(is.null(gtf_path)){stop("Warning! Must supply the full path to GTF file from cloned BrainGENIE repository")}
   # convert blood gene expression ids to hgnc symbols
-  convert = convert_ensg_to_hgnc(ensg = rownames(blood_expr), gtf_path = "~/Documents/git_repo/BrainGENIE/gtf/gencode.v26.GRCh38.genes.gtf")
+  convert = convert_ensg_to_hgnc(ensg = rownames(blood_expr), gtf_path = gtf_path)
   convert = convert[match(rownames(blood_expr), convert$gene_id), ]
   dat = data.frame(symbol = convert$gene_name, blood_expr)
   dat = data.table(dat)
@@ -184,7 +185,7 @@ quick_convert_ensg_to_hgnc = function(){
   blood_expr <<- dat
   
   # convert brain gene expression ids to hgnc symbols
-  convert = convert_ensg_to_hgnc(ensg = rownames(brain_expr), gtf_path = "~/Documents/git_repo/BrainGENIE/gtf/gencode.v26.GRCh38.genes.gtf")
+  convert = convert_ensg_to_hgnc(ensg = rownames(brain_expr), gtf_path = gtf_path)
   convert = convert[match(rownames(brain_expr), convert$gene_id), ]
   dat = data.frame(symbol = convert$gene_name, brain_expr)
   dat = data.table(dat)
