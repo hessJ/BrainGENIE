@@ -204,7 +204,7 @@ create.folds = function(nfolds = 5, ids = NULL){
 }
 
 # re-train PCA models using specified gene lists present in target sample:
-retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 20, prop_for_test_set = 0.1, n_folds = 5){
+retrain_gtex = function(gene_list = NULL, output = "", set_seed = T, seed = 123, tissue = NULL, ncomps = 20, prop_for_test_set = 0.0, n_folds = 5){
   
   if(base::exists("brain_expr") == FALSE | base::exists("blood_expr") == FALSE){stop("Warning! Paired blood-brain data have not been imported properly. Please run `load_expr_data` first.")}
   if(is.null(n_folds) == T){stop("Specify the number of cross-validation folds")}
@@ -234,6 +234,7 @@ retrain_gtex = function(gene_list = NULL, output = "", tissue = NULL, ncomps = 2
   }
   
   # set up fold ids for cross-validation
+  if(set_seed == T){seed = seed}
   folds = create.folds(nfolds = n_folds, ids=colnames(brain_counts))
   
   allmods = list();
