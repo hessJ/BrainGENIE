@@ -198,10 +198,10 @@ quick_convert_ensg_to_hgnc = function(gtf_path=NULL){
 
 
 # create folds for cross-validation
-create.folds = function(nfolds = 5, ids = NULL){
-  if(is.null(ids)){stop("Expecting IDs column for creating folds")}
-  sample(dplyr::ntile(ids, nfolds)) # random folds
-}
+#create.folds = function(nfolds = 5, ids = NULL){
+#  if(is.null(ids)){stop("Expecting IDs column for creating folds")}
+#  sample(dplyr::ntile(ids, nfolds)) # random folds
+#}
 
 # re-train PCA models using specified gene lists present in target sample:
 retrain_gtex = function(gene_list = NULL, output = "", set_seed = T, seed = 123, tissue = NULL, ncomps = 20, prop_for_test_set = 0.0, n_folds = 5){
@@ -234,7 +234,25 @@ retrain_gtex = function(gene_list = NULL, output = "", set_seed = T, seed = 123,
   }
   
   # set up fold ids for cross-validation
-  if(set_seed == T){seed = seed}
+  # set up fold ids for cross-validation
+  if(set_seed == T){seed = seed;
+  
+  # create folds for cross-validation
+  create.folds = function(nfolds = 5, ids = NULL){
+    set.seed(seed)
+    if(is.null(ids)){stop("Expecting IDs column for creating folds")}
+    sample(dplyr::ntile(ids, nfolds)) # random folds
+  }
+  }
+  if(set_seed == F){
+    if(set_seed == T){
+    # create folds for cross-validation
+    create.folds = function(nfolds = 5, ids = NULL){
+      if(is.null(ids)){stop("Expecting IDs column for creating folds")}
+      sample(dplyr::ntile(ids, nfolds)) # random folds
+    }
+    }
+  }
   folds = create.folds(nfolds = n_folds, ids=colnames(brain_counts))
   
   allmods = list();
