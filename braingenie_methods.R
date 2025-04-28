@@ -113,7 +113,7 @@ fit_lr_weights_in_gtex = function(pca_model  = NULL, tissue = NULL, gene_list = 
 }
 
 # 6. apply brain transcriptome prediction model to blood PCA
-impute_gxp = function(pca_in_new_sample = NULL, trained_model = NULL, scale = TRUE){
+impute_gxp = function(pca_in_new_sample = NULL, trained_model = NULL, scale = FALSE){
   
   if(is.null(trained_model)){stop("Please specify object containing pre-trained models")}
   
@@ -440,7 +440,7 @@ fit_lr_weights_in_gtex_age_sex = function(pca_model  = NULL, tissue = NULL, gene
 }
                                  
                                  
-impute_gxp_with_age_sex = function(pca_in_new_sample = NULL, trained_model = NULL, scale = TRUE){
+impute_gxp_with_age_sex = function(pca_in_new_sample = NULL, trained_model = NULL, scale = FALSE){
   
   if(is.null(trained_model)){stop("Please specify object containing pre-trained models")}
   
