@@ -245,12 +245,12 @@ retrain_gtex = function(gene_list = NULL, output = "", set_seed = T, seed = 123,
   }
   }
   if(set_seed == F){
-    if(set_seed == T){
+    #if(set_seed == T){
     # create folds for cross-validation
     create.folds = function(nfolds = 5, ids = NULL){
       if(is.null(ids)){stop("Expecting IDs column for creating folds")}
       sample(dplyr::ntile(ids, nfolds)) # random folds
-    }
+    #}
     }
   }
   folds = create.folds(nfolds = n_folds, ids=colnames(brain_counts))
