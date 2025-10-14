@@ -17,7 +17,7 @@ ______
 `Rscript install.R`
 
 ## Current: Download paired blood & brain normalized (residual) gene expression data from GTEx version 10 release:
-https://zenodo.org/records/17068862
+https://zenodo.org/records/17068862/files/braingenie_gtexv10_dataset.tar.gz?download=1
 
 ## Old: Download paired blood & brain normalized (residual) gene expression data from GTEx version 8 release:
 https://zenodo.org/record/6350240/files/normalized_expression_dat_gtexv8.tar.gz?download=1
